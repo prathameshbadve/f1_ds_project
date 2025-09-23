@@ -13,3 +13,6 @@ test-utils-decorators: src/utils/logger.py
 
 clean-logfiles:
 	rm -rf monitoring/logs
+
+test-fastf1: tests/unit/test_fastf1_client.py
+	pytest tests/unit/test_fastf1_client.py
