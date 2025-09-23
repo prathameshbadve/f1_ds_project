@@ -1,3 +1,5 @@
+"""COnfiguring the logging objects"""
+
 import logging
 import logging.config
 import os
@@ -74,9 +76,15 @@ def setup_logging():
                 "level": os.getenv("FASTF1_LOG_LEVEL", "INFO"),
                 "propagate": False,
             },
+            "test": {
+                "handlers": [],
+                "level": "DEBUG",
+                "propagate": True,
+            },
         },
     }
 
+    # Setting the logging configuration as per the above dictionary
     logging.config.dictConfig(log_config)
 
     # Log startup info
