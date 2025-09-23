@@ -22,12 +22,16 @@ def retry(max_attempts: int = 3, delay: float = 1.0):
                 except Exception as e:
                     if attempt == max_attempts - 1:
                         logger.error(
-                            f"Final attempt failed for {func.__name__}: {str(e)}"
+                            "Final attempt failed for %s: %s", func.__name__, str(e)
                         )
                         raise
                     else:
                         logger.warning(
-                            f"Attempt {attempt + 1} failed for {func.__name__}: {str(e)}. Retrying in {delay}s..."
+                            "Attempt %d failed for %s: %s. Retrying in %.2fs...",
+                            attempt + 1,
+                            func.__name__,
+                            str(e),
+                            delay,
                         )
                         time.sleep(delay)
 
@@ -46,7 +50,7 @@ def measure_time(func: Callable) -> Callable:
         execution_time = time.time() - start_time
 
         logger = logging.getLogger(func.__module__)
-        logger.info(f"{func.__name__} executed in {execution_time:.2f} seconds")
+        logger.info("%s executed in %.2f seconds", func.__name__, execution_time)
 
         return result
 
