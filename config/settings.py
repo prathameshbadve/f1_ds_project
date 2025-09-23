@@ -1,3 +1,5 @@
+"""Settings configuration"""
+
 import os
 from pathlib import Path
 from typing import List
@@ -55,6 +57,9 @@ class FastF1Config(Config):
         self.enable_weather = os.getenv("ENABLE_WEATHER_DATA", "true").lower() == "true"
         self.include_testing = (
             os.getenv("INCLUDE_TESTING_SESSIONS", "true").lower() == "true"
+        )
+        self.race_control_messages = (
+            os.getenv("ENABLE_RACE_CONTROL_MESSAGES", "true").lower() == "true"
         )
 
         # Session types to process
