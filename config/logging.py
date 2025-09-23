@@ -40,24 +40,24 @@ def setup_logging():
                 "level": "INFO",
                 "formatter": "detailed",
                 "filename": log_dir / "app.log",
-                "maxBytes": 10485760,  # 10MB
-                "backupCount": 5,
+                "maxBytes": int(os.getenv("LOG_MAX_SIZE", "10485760")),
+                "backupCount": int(os.getenv("LOG_BACKUP_COUNT", "5")),
             },
             "file_error": {
                 "class": "logging.handlers.RotatingFileHandler",
                 "level": "ERROR",
                 "formatter": "detailed",
                 "filename": log_dir / "error.log",
-                "maxBytes": 10485760,
-                "backupCount": 5,
+                "maxBytes": int(os.getenv("LOG_MAX_SIZE", "10485760")),
+                "backupCount": int(os.getenv("LOG_BACKUP_COUNT", "5")),
             },
             "data_ingestion": {
                 "class": "logging.handlers.RotatingFileHandler",
                 "level": "DEBUG",
                 "formatter": "json",
                 "filename": log_dir / "data_ingestion.log",
-                "maxBytes": 52428800,  # 50MB
-                "backupCount": 10,
+                "maxBytes": int(os.getenv("LOG_MAX_SIZE", "10485760")),
+                "backupCount": int(os.getenv("LOG_BACKUP_COUNT", "5")),
             },
         },
         "loggers": {
