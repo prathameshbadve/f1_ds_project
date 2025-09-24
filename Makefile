@@ -17,5 +17,11 @@ test-fastf1: tests/unit/test_fastf1_client.py
 test-schedule-loader: tests/unit/test_schedule_loader.py
 	pytest tests/unit/test_schedule_loader.py
 
+test-session-loader: tests/unit/test_session_loader.py
+	pytest tests/unit/test_session_loader.py
+
 clean-logfiles:
 	rm -rf monitoring/logs
+
+clean-raw-data:
+	rm -rf data/raw/2022
