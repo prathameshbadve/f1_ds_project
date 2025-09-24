@@ -11,8 +11,11 @@ test-logging-setup: tests/unit/test_logging_setup.py
 test-utils-decorators: src/utils/logger.py
 	pytest tests/unit/test_utils_decorators.py
 
-clean-logfiles:
-	rm -rf monitoring/logs
-
 test-fastf1: tests/unit/test_fastf1_client.py
 	pytest tests/unit/test_fastf1_client.py
+
+test-schedule-loader: tests/unit/test_schedule_loader.py
+	pytest tests/unit/test_schedule_loader.py
+
+clean-logfiles:
+	rm -rf monitoring/logs
