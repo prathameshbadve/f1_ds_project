@@ -52,11 +52,9 @@ class ScheduleLoader:
             current_year = datetime.now().year
 
             if year == current_year:
-                max_age = timedelta(days=1)  # Refresh daily for current season
-            elif year == current_year - 1:
-                max_age = timedelta(days=7)  # Weekly for last year
+                max_age = timedelta(days=7)  # Refresh weekly for current season
             else:
-                max_age = timedelta(days=30)  # Monthly for older years
+                max_age = timedelta(days=365)  # Yearly for older years
 
             if file_age > max_age:
                 self.logger.info(
