@@ -2,42 +2,11 @@
 Logging utilities for data operations
 """
 
-import functools
 import logging
-import time
-from typing import Callable
 
 import pandas as pd
 
 from config.logging import get_logger
-
-
-def log_execution_time(func: Callable) -> Callable:
-    """Decorator to log function execution time"""
-
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs):
-        logger = get_logger(func.__module__)
-        start_time = time.time()
-
-        logger.info("Starting %s", func.__name__)
-
-        try:
-            result = func(*args, **kwargs)
-            execution_time = time.time() - start_time
-            logger.info("Completed %s in %.2f seconds", func.__name__, execution_time)
-            return result
-        except Exception as e:
-            execution_time = time.time() - start_time
-            logger.error(
-                "Failed %s after %.2f seconds: %s",
-                func.__name__,
-                execution_time,
-                str(e),
-            )
-            raise
-
-    return wrapper
 
 
 def log_data_info(data: pd.DataFrame, data_name: str, logger: logging.Logger = None):
