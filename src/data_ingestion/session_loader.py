@@ -29,7 +29,6 @@ class SessionLoader:
             "laps": self.data_config.file_format,
             "results": self.data_config.file_format,
             "weather": self.data_config.file_format,
-            "telemetry": "json",
         }
 
     def _get_session_base_path(self, year: int, gp: str, session: str) -> Path:
@@ -243,7 +242,6 @@ class SessionLoader:
                 "laps": self._extract_lap_data,
                 "results": self._extract_session_results,
                 "weather": self._extract_weather_data,
-                "telemetry": self._extract_telemetry_summary,
             }
 
             # Load only missing data
@@ -305,7 +303,6 @@ class SessionLoader:
                 "laps": self._extract_lap_data(session_obj),
                 "results": self._extract_session_results(session_obj),
                 "weather": self._extract_weather_data(session_obj),
-                "telemetry": self._extract_telemetry_summary(session_obj),
             }
 
             # Save all data
@@ -436,52 +433,6 @@ class SessionLoader:
 
         log_data_info(weather, "Weather Data", self.logger)
         return weather
-
-    def _extract_telemetry_summary(self, session_obj) -> Dict[str, Any]:
-        """Extract telemetry summary information"""
-
-        if not self.config.enable_telemetry:
-            self.logger.debug("Telemetry processing disabled by configuration")
-            return {}
-
-        self.logger.debug("Extracting telemetry summary")
-
-        telemetry_summary = {
-            "telemetry_available": False,
-            "fastest_lap_telemetry": None,
-            "total_telemetry_points": 0,
-        }
-
-        try:
-            if hasattr(session_obj, "laps") and not session_obj.laps.empty:
-                # Get fastest lap
-                fastest_lap = session_obj.laps.pick_fastest()
-                if fastest_lap is not None and hasattr(fastest_lap, "get_telemetry"):
-                    telemetry = fastest_lap.get_telemetry()
-                    if telemetry is not None and not telemetry.empty:
-                        telemetry_summary["telemetry_available"] = True
-                        telemetry_summary["fastest_lap_telemetry"] = True
-                        telemetry_summary["total_telemetry_points"] = len(telemetry)
-                        telemetry_summary["fastest_lap_driver"] = fastest_lap.get(
-                            "Driver", "Unknown"
-                        )
-                        lap_time = fastest_lap.get("LapTime")
-                        if lap_time is not None:
-                            telemetry_summary["fastest_lap_time"] = str(lap_time)
-
-                        # Basic telemetry stats
-                        if "Speed" in telemetry.columns:
-                            telemetry_summary["max_speed"] = telemetry["Speed"].max()
-                            telemetry_summary["avg_speed"] = telemetry["Speed"].mean()
-
-                        if "RPM" in telemetry.columns:
-                            telemetry_summary["max_rpm"] = telemetry["RPM"].max()
-
-        except Exception as e:
-            self.logger.warning("Error extracting telemetry summary: %s", str(e))
-
-        self.logger.debug("Telemetry summary: %s", telemetry_summary)
-        return telemetry_summary
 
     def _save_session_data(
         self, session_data: Dict[str, Any], year: int, gp: str, session: str

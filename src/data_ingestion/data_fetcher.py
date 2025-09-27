@@ -15,6 +15,7 @@ from config.settings import data_config, fastf1_config
 from src.data_ingestion.fastf1_client import FastF1Client
 from src.data_ingestion.schedule_loader import ScheduleLoader
 from src.data_ingestion.session_loader import SessionLoader
+from src.data_ingestion.telemetry_loader import TelemetryLoader
 from src.utils.decorators import log_operation, measure_time
 from src.utils.helpers import ensure_directory, load_data
 
@@ -26,6 +27,7 @@ class DataFetcher:
         self.client = FastF1Client()
         self.session_loader = SessionLoader(self.client)
         self.schedule_loader = ScheduleLoader(self.client)
+        self.telemetry_loader = TelemetryLoader(self.client)
         self.config = fastf1_config
         self.data_config = data_config
         self.logger = logging.getLogger("data_ingestion.data_fetcher")
@@ -113,15 +115,23 @@ class DataFetcher:
 
         for event in events:
             self.logger.info("Processing event: %s", event)
-            event_summary = {"sessions": {}, "success_count": 0, "fail_count": 0}
+            event_summary = {
+                "sessions": {},
+                "success_count": 0,
+                "fail_count": 0,
+            }
 
             for session_type in session_types:
                 try:
                     session_data = self.session_loader.load_session_data(
                         year, event, session_type
-                    )
+                    )  # Returns a dict {session_info: dict, laps: df, results: df, weather: df}
+
+                    # Updating the event processing summary
                     event_summary["sessions"][session_type] = "success"
                     event_summary["success_count"] += 1
+
+                    # Updating the ingestion summary
                     summary["sessions_processed"] += 1
 
                     self.logger.info(
@@ -129,8 +139,11 @@ class DataFetcher:
                     )
 
                 except Exception as e:
+                    # Updating event processing summary
                     event_summary["sessions"][session_type] = f"Failed: {str(e)}"
                     event_summary["fail_count"] += 1
+
+                    # Updating the ingestion summary
                     summary["sessions_failed"] += 1
 
                     self.logger.error(
@@ -144,6 +157,7 @@ class DataFetcher:
                 # Small delay to avoid overwhelming the API
                 time.sleep(1)
 
+            # Updating the ingestion summary with the event summary and the number of events processed count
             summary["events"][event] = event_summary
             summary["events_processed"] += 1
 
@@ -223,7 +237,10 @@ class DataFetcher:
         return event_summary
 
     def ingest_event_data(
-        self, year: int, event: str, session_types: Optional[List[str]] = None
+        self,
+        year: int,
+        event: str,
+        session_types: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
         """Ingest data for a single event"""
 
