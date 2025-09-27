@@ -2,6 +2,7 @@
 Helper functions for file operations and data handling
 """
 
+import json
 import logging
 from pathlib import Path
 from typing import Optional
@@ -57,7 +58,7 @@ def load_data(filepath: Path, file_format: str = "parquet") -> Optional[pd.DataF
         elif file_format.lower() == "csv":
             data = pd.read_csv(filepath)
         elif file_format.lower() == "json":
-            data = pd.read_json(filepath, orient="records")
+            data = pd.read_json(filepath, typ="series").to_frame().T
         else:
             raise ValueError(f"Unsupported file format: {file_format}")
 

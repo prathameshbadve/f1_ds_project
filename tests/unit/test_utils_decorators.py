@@ -2,7 +2,7 @@ import logging
 from time import sleep
 
 from config.logging import setup_logging, get_logger
-from src.utils.logger import log_execution_time
+from src.utils.decorators import measure_time
 
 setup_logging()
 
@@ -12,7 +12,7 @@ def test_log_execution_time(caplog):
 
     test_logger = get_logger("test")
 
-    @log_execution_time
+    @measure_time
     def slow_func(x, y):
         sleep(1)
         test_logger.info("Performing operations of slow_func...")
