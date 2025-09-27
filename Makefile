@@ -25,3 +25,31 @@ clean-logfiles:
 
 clean-raw-data:
 	rm -rf data/raw/2022
+
+# Pipeline operations
+.PHONY: run-full-ingestion run-ingestion-conservative run-ingestion-performance resume-ingestion list-failed-runs dry-run-ingestion
+
+run-full-ingestion:
+	@echo "Running full F1 data ingestion pipeline..."
+	@echo "Usage: make run-full-ingestion SEASONS=2022-2024 SESSIONS=Q,R"
+	$(PYTHON) scripts/data/run_full_ingestion.py $(if $(SEASONS),--seasons $(SEASONS),) $(if $(SESSIONS),--sessions $(SESSIONS),)
+
+run-ingestion-conservative:
+	@echo "Running conservative F1 data ingestion..."
+	$(PYTHON) scripts/data/run_full_ingestion.py --preset conservative
+
+run-ingestion-performance:
+	@echo "Running high-performance F1 data ingestion..."
+	$(PYTHON) scripts/data/run_full_ingestion.py --preset performance
+
+resume-ingestion:
+	@echo "Resuming failed data ingestion..."
+	$(PYTHON) scripts/data/resume_failed_ingestion.py
+
+list-failed-runs:
+	@echo "Listing failed ingestion runs..."
+	$(PYTHON) scripts/data/resume_failed_ingestion.py --list
+
+dry-run-ingestion:
+	@echo "Dry run of data ingestion (shows what would be processed)..."
+	$(PYTHON) scripts/data/run_full_ingestion.py --dry-run $(if $(SEASONS),--seasons $(SEASONS),)
