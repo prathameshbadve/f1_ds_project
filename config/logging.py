@@ -43,6 +43,14 @@ def setup_logging():
                 "maxBytes": int(os.getenv("LOG_MAX_SIZE", "10485760")),
                 "backupCount": int(os.getenv("LOG_BACKUP_COUNT", "5")),
             },
+            "fastf1_info": {
+                "class": "logging.handlers.RotatingFileHandler",
+                "level": "INFO",
+                "formatter": "detailed",
+                "filename": log_dir / "fastf1.log",
+                "maxBytes": int(os.getenv("LOG_MAX_SIZE", "10485760")),
+                "backupCount": int(os.getenv("LOG_BACKUP_COUNT", "5")),
+            },
             "file_error": {
                 "class": "logging.handlers.RotatingFileHandler",
                 "level": "ERROR",
@@ -72,7 +80,7 @@ def setup_logging():
                 "propagate": False,
             },
             "fastf1": {
-                "handlers": ["console", "file_info"],
+                "handlers": ["console", "fastf1_info"],
                 "level": os.getenv("FASTF1_LOG_LEVEL", "INFO"),
                 "propagate": False,
             },
@@ -88,7 +96,7 @@ def setup_logging():
     logging.config.dictConfig(log_config)
 
     # Log startup info
-    logger = logging.getLogger(__name__)
+    logger = get_logger(__name__)
     logger.info("Logging configured. Log directory: %s", log_dir.absolute())
     logger.info("Environment: %s", os.getenv("ENVIRONMENT", "development"))
 
