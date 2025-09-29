@@ -90,23 +90,14 @@ def test_with_real_data():
             return True
 
         # Load real session info
-        with open(sample_file, "r") as f:
+        with open(sample_file, "r", encoding="utf-8") as f:
             real_session_info = json.load(f)
-
-        # Create data structure like your ingestion produces
-        real_session_data = {
-            "session_info": real_session_info,
-            "laps": None,
-            "results": None,
-            "weather": None,
-            "telemetry": {},
-        }
 
         # Process with SessionProcessor
         processor = SessionProcessor()
         context = ProcessingContext(year=2023, event_name="Monaco", session_type="Q")
 
-        result_df, updated_context = processor.process(real_session_data, context)
+        result_df, updated_context = processor.process(real_session_info, context)
 
         logger.info("✅ Real data processing completed!")
         logger.info(f"Output shape: {result_df.shape}")
